@@ -8,3 +8,5 @@ export const database = new Sequelize({
 	port: 3306,
 	dialect: "mysql"
 });
+
+export const secret = "Crown security Secret";
