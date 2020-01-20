@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { UserAudit } from 'models/user_audit.model';
-import { UserAuditReport } from 'models/user_audit_report.model';
-import { User } from 'models/user.model';
-import { Role } from 'models/role.model';
+import { UserAudit } from '../models/user_audit.model';
+import { UserAuditReport } from '../models/user_audit_report.model';
+import { User } from '../models/user.model';
+import { Role } from '../models/role.model';
 import { startOfDay, endOfDay, isToday} from 'date-fns';
-import { between } from 'sequelize/types/lib/operators';
+import { Op } from 'sequelize';
 
 export class UserAuditReportController{
 	create(req: Request, res: Response) {
@@ -15,7 +15,11 @@ export class UserAuditReportController{
 				shift: req.body.shift,
 				user_audits: req.body.user_audits
 			}, {
-				include: [UserAudit]
+				include: [
+					{ model: UserAudit, 
+						as: 'user_audits' 
+					}
+				]
 			})
 			.then((userAuditReport) => res.status(201).send(userAuditReport))
 			.catch((error) => res.status(400).send(error));
@@ -52,7 +56,7 @@ export class UserAuditReportController{
 			.findAll({
 				where: {
 					reporting_date: {
-						[between]: [
+						[Op.between]: [
 							startOfDay(new Date(req.body.reportingDate)),
 							endOfDay(new Date(req.body.reportingDate))
 						]
@@ -63,11 +67,18 @@ export class UserAuditReportController{
 				include: [
 					{
 						model: UserAudit,
+						as: 'user_audits',
 						include: [
 							{
 								attributes: ['id', 'role_id', 'firstname', 'corp_email'],
 								model: User,
-								include: [Role]
+								as: 'user',
+								include: [
+									{ 
+										model: Role,
+										as: 'role'
+									}
+								]
 							}
 						]
 					}

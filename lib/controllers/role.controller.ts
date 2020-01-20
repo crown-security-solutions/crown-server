@@ -1,77 +1,72 @@
 import { Request, Response } from 'express';
-import { Site } from '../models/site.model';
-import { SiteStrength } from '../models/site_strength.model';
+import { Role } from '../models/role.model';
 
-export class SiteController{
+export class RoleController{
 	create(req: Request, res: Response) {
-    return Site
+    return Role
       .create({
         name: req.body.name,
-        address: req.body.address,
-        contact: req.body.contact,
-        contact_person: req.body.contact_person,
-        active: req.body.active,
+        code: req.body.code
       })
-      .then((site) => res.status(201).send(site))
+      .then((role) => res.status(201).send(role))
       .catch((error) => res.status(400).send(error));
   }
 
   list(req: Request, res: Response) {
-    return Site
+    return Role
       .findAll({
         order: [
           ['createdAt', 'DESC'],
-        ],
-        include: [SiteStrength]
+        ]
       })
-      .then((sites) => res.status(200).send(sites))
+      .then((roles) => res.status(200).send(roles))
       .catch((error) => res.status(400).send(error));
   }
 
   retrieve(req: Request, res: Response) {
-    return Site
-      .findByPk(req.params.siteId, {
+    return Role
+      .findByPk(req.params.roleId, {
       })
-      .then((site) => {
-        if (!site) {
+      .then((role) => {
+        if (!role) {
           return res.status(404).send({
-            message: 'Site Not Found',
+            message: 'Role Not Found',
           });
         }
-        return res.status(200).send(site);
+        return res.status(200).send(role);
       })
       .catch((error) => res.status(400).send(error));
   }
 
   update(req: Request, res: Response) {
-    return Site
-      .findByPk(req.params.siteId, {
+    return Role
+      .findByPk(req.params.roleId, {
       })
-      .then(site => {
-        if (!site) {
+      .then(role => {
+        if (!role) {
           return res.status(404).send({
-            message: 'Site Not Found',
+            message: 'Role Not Found',
           });
         }
-        return site
+        return role
           .update({
           })
-          .then(() => res.status(200).send(site))
+          .then(() => res.status(200).send(role))
           .catch((error) => res.status(400).send(error));
       })
       .catch((error) => res.status(400).send(error));
   }
 
   destroy(req: Request, res: Response) {
-    return Site
-      .findByPk(req.params.siteId)
-      .then(site => {
-        if (!site) {
+    return Role
+      .findByPk(req.params.roleId)
+      .then(role => {
+        if (!role) {
           return res.status(400).send({
-            message: 'Site Not Found',
+            message: 'Role Not Found',
           });
         }
-        return site
+        return role
           .destroy()
           .then(() => res.status(204).send())
           .catch((error) => res.status(400).send(error));

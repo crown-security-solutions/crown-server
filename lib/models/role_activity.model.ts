@@ -11,7 +11,7 @@ export class RoleActivity extends Model {
 
 RoleActivity.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true

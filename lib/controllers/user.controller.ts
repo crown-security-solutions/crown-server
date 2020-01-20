@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import { User } from '../models/user.model';
 import * as jwt from 'jsonwebtoken';
 import { secret } from '../config/database';
-import { Role } from 'models/role.model';
-import { UserAudit } from 'models/user_audit.model';
+import { Role } from '../models/role.model';
+import { UserAudit } from '../models/user_audit.model';
 
 export class UserController{
 	authenticate(req: Request, res: Response) {
@@ -90,7 +90,12 @@ export class UserController{
 					role_id: req.params.roleId,
 					active: true
 				},
-        include: [Role]
+        include: [
+					{
+						model: Role,
+						as: 'role'
+					}
+				]
       })
       .then((user) => {
         if (!user) {

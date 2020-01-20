@@ -1,5 +1,7 @@
 import { Sequelize, Model, DataTypes, BuildOptions } from "sequelize";
 import { database } from "../config/database";
+import { Role } from "./role.model";
+import { UserAudit } from "./user_audit.model";
 
 export class User extends Model {
   public id!: number;
@@ -94,5 +96,11 @@ User.init(
     sequelize: database // this bit is important
   }
 );
+
+User.hasOne(Role, {
+	foreignKey: 'id',
+	sourceKey: 'role_id',
+	as: 'role'
+});
 
 // User.sync({ force: true }).then(() => console.log("User table created"));

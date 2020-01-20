@@ -16,7 +16,7 @@ export class Site extends Model {
 
 Site.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
@@ -35,9 +35,8 @@ Site.init(
 );
 
 Site.hasMany(SiteStrength, {
-	foreignKey: 'id',
-	sourceKey: 'site_id',
-	as: 'site_HM_SiteStrength'
+	foreignKey: 'site_id',
+	sourceKey: 'id'
 });
 
 // Site.sync({ force: true }).then(() => console.log("Site table created"));

@@ -26,7 +26,7 @@ export class UserAudit extends Model {
 
 UserAudit.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
@@ -53,16 +53,9 @@ UserAudit.init(
   }
 );
 
-UserAudit.belongsTo(UserAuditReport, {
-	foreignKey: 'audit_report_id',
-	targetKey: 'id',
-	as: 'UA_BT_UAR'
-});
-
 UserAudit.belongsTo(User, {
 	foreignKey: 'user_id',
 	targetKey: 'id',
-	as: 'UA_BT_User'
+	as: 'user'
 });
-
 // UserAudit.sync({ force: true }).then(() => console.log("UserAudit table created"));

@@ -13,7 +13,7 @@ export class SiteStrength extends Model {
 
 SiteStrength.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true

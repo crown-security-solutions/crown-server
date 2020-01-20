@@ -12,7 +12,7 @@ export class SiteLog extends Model {
 
 SiteLog.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true

@@ -11,7 +11,7 @@ export class Role extends Model {
 
 Role.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true

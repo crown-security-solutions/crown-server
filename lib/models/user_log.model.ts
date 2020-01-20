@@ -12,7 +12,7 @@ export class UserLog extends Model {
 
 UserLog.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true

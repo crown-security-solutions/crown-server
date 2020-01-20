@@ -13,7 +13,7 @@ export class UserAuditReport extends Model {
 
 UserAuditReport.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
@@ -31,7 +31,12 @@ UserAuditReport.init(
 UserAuditReport.hasMany(UserAudit, {
 	foreignKey: 'audit_report_id',
 	sourceKey: 'id',
-	as: 'UAR_HM_UA'
+	as: 'user_audits'
+});
+
+UserAudit.belongsTo(UserAuditReport, {
+	foreignKey: 'audit_report_id',
+	targetKey: 'id'
 });
 
 // UserAuditReport.sync({ force: true }).then(() => console.log("UserAuditReport table created"));

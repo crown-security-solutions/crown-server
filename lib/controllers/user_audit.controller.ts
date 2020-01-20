@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserAudit } from 'models/user_audit.model';
+import { UserAudit } from '../models/user_audit.model';
 
 export class UserAuditController{
 	create(req: Request, res: Response) {

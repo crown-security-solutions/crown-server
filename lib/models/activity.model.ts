@@ -10,7 +10,7 @@ export class Activity extends Model {
 
 Activity.init(
   {
-    id: {
+		id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true
