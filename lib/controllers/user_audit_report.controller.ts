@@ -3,7 +3,7 @@ import { UserAudit } from '../models/user_audit.model';
 import { UserAuditReport } from '../models/user_audit_report.model';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
-import { startOfDay, endOfDay, isToday, isEqual, startOfToday, getUnixTime} from 'date-fns';
+import { startOfDay, endOfDay} from 'date-fns';
 import { Op } from 'sequelize';
 
 export class UserAuditReportController{
@@ -53,7 +53,7 @@ export class UserAuditReportController{
 
 	find(req: Request, res: Response) {
 		return UserAuditReport
-			.findAll({
+			.findOne({
 				where: {
 					reporting_date: {
 						[Op.between]: [
@@ -93,9 +93,7 @@ export class UserAuditReportController{
 				return res.status(200).send({
 					...{ userAuditReport },
 					...{
-						disableForm: !(startOfToday().toDateString() === startOfDay(new Date(req.body.reportingDate)).toDateString()),
-						serverDate: getUnixTime(startOfToday()),
-						reportingDate: getUnixTime(startOfDay(new Date(req.body.reportingDate)))
+						disableForm: !(userAuditReport.reporting_date.toDateString() === startOfDay(new Date(req.body.reportingDate)).toDateString())
 					}
 				});
 			})
