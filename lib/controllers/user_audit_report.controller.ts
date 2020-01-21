@@ -3,7 +3,7 @@ import { UserAudit } from '../models/user_audit.model';
 import { UserAuditReport } from '../models/user_audit_report.model';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
-import { startOfDay, endOfDay, isToday} from 'date-fns';
+import { startOfDay, endOfDay, isToday, isEqual, startOfToday} from 'date-fns';
 import { Op } from 'sequelize';
 
 export class UserAuditReportController{
@@ -93,7 +93,7 @@ export class UserAuditReportController{
 				return res.status(200).send({
 					...{ userAuditReport },
 					...{
-						disableForm: !isToday(endOfDay(new Date(req.body.reportingDate)))
+						disableForm: !(startOfToday().toISOString() === startOfDay(new Date(req.body.reportingDate)).toISOString())
 					}
 				});
 			})
