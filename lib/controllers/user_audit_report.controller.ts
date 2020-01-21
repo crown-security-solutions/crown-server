@@ -93,7 +93,7 @@ export class UserAuditReportController{
 				return res.status(200).send({
 					...{ userAuditReport },
 					...{
-						disableForm: !isToday(startOfDay(new Date(req.body.reportingDate)))
+						disableForm: !isToday(endOfDay(new Date(req.body.reportingDate)))
 					}
 				});
 			})
