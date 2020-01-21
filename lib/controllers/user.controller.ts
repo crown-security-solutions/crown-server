@@ -4,15 +4,16 @@ import * as jwt from 'jsonwebtoken';
 import { secret } from '../config/database';
 import { Role } from '../models/role.model';
 import { UserAudit } from '../models/user_audit.model';
+import { Helper } from '../config/helper';
 
 export class UserController{
 	authenticate(req: Request, res: Response) {
 	  return User
-      .findAll({
+      .findOne({
         where: {
           corp_email: req.body.email,
           active: 1,
-          password: req.body.password
+          password: Helper.decryptData(req.body.password)
         }
       })
       .then((user: any) => {
@@ -22,7 +23,7 @@ export class UserController{
           });
         }
         const token = jwt.sign({ sub: user.id, role: user.role_id }, secret);
-        const { password, ...userWithoutPassword } = user;
+        const { password, ...userWithoutPassword } = user.dataValues;
         const response = {
             ...userWithoutPassword,
             token

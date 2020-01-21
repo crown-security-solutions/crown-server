@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon ./lib/server.ts",
+    "dev": "nodemon --inspect ./lib/server.ts",
     "prod": "node ./dist/server.js",
     "start": "npm run build && npm run prod"
   },
@@ -14,22 +14,25 @@
   "dependencies": {
     "@types/express": "^4.17.2",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "crypto-js": "^3.1.9-1",
+    "date-fns": "^2.8.1",
     "express": "^4.17.1",
-    "nodemon": "^2.0.2",
-    "typescript": "^3.7.4",
     "express-jwt": "^5.3.1",
     "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.15",
+    "morgan": "^1.7.0",
     "mysql2": "^2.0.1",
+    "nodemon": "^2.0.2",
     "rootpath": "^0.1.2",
     "sequelize": "^5.21.2",
-    "morgan": "^1.7.0",
     "sequelize-cli": "^5.5.1",
-    "date-fns": "^2.8.1",
-    "cors": "^2.8.5"
+    "typescript": "^3.7.4"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.29",
     "@types/sequelize": "^4.28.8",
-    "@types/validator": "^12.0.1"
+    "@types/validator": "^12.0.1",
+    "ts-node": "^8.6.2"
   }
 }

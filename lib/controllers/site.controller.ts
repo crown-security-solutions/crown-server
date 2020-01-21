@@ -22,7 +22,12 @@ export class SiteController{
         order: [
           ['createdAt', 'DESC'],
         ],
-        include: [SiteStrength]
+        include: [
+					{ 
+						model: SiteStrength,
+						as: 'site_strengths' 
+					}
+				]
       })
       .then((sites) => res.status(200).send(sites))
       .catch((error) => res.status(400).send(error));

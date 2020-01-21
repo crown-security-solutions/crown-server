@@ -10,7 +10,7 @@ export class UserAuditReportController{
 	create(req: Request, res: Response) {
 		return UserAuditReport
 			.create({
-				reporting_date: req.body.reportingDate,
+				reporting_date: startOfDay(new Date(req.body.reportingDate)),
 				site_id: req.body.siteId,
 				shift: req.body.shift,
 				user_audits: req.body.user_audits

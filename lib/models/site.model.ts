@@ -36,7 +36,8 @@ Site.init(
 
 Site.hasMany(SiteStrength, {
 	foreignKey: 'site_id',
-	sourceKey: 'id'
+	sourceKey: 'id',
+	as: 'site_strengths'
 });
 
 // Site.sync({ force: true }).then(() => console.log("Site table created"));
