@@ -94,7 +94,8 @@ export class UserAuditReportController{
 					...{ userAuditReport },
 					...{
 						disableForm: !(startOfToday().toDateString() === startOfDay(new Date(req.body.reportingDate)).toDateString()),
-						serverDate: startOfToday().toDateString()
+						serverDate: startOfToday().toDateString(),
+						reportingDate: startOfDay(new Date(req.body.reportingDate)).toDateString()
 					}
 				});
 			})
