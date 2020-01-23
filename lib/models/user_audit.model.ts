@@ -2,11 +2,13 @@ import { Sequelize, Model, DataTypes, BuildOptions } from "sequelize";
 import { database } from "../config/database";
 import { UserAuditReport } from "./user_audit_report.model";
 import { User } from "./user.model";
+import { Role } from "./role.model";
 
 export class UserAudit extends Model {
   public id!: number;
 	audit_report_id: number;
 	user_id: number;
+	assigned_role_id: number;
 	attendance: boolean;
 	ot: boolean;
 	cross_ot: boolean;
@@ -32,7 +34,8 @@ UserAudit.init(
       primaryKey: true
 		},
 		audit_report_id: DataTypes.BIGINT,
-    user_id: DataTypes.BIGINT,
+		user_id: DataTypes.BIGINT,
+		assigned_role_id: DataTypes.BIGINT,
     attendance: DataTypes.BOOLEAN,
     ot: DataTypes.BOOLEAN,
     cross_ot: DataTypes.BOOLEAN,
@@ -57,5 +60,11 @@ UserAudit.belongsTo(User, {
 	foreignKey: 'user_id',
 	targetKey: 'id',
 	as: 'user'
+});
+
+UserAudit.belongsTo(Role, {
+	foreignKey: 'assigned_role_id',
+	targetKey: 'id',
+	as: 'assigned_role'
 });
 // UserAudit.sync({ force: true }).then(() => console.log("UserAudit table created"));

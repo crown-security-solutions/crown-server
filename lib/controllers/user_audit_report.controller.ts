@@ -79,21 +79,25 @@ export class UserAuditReportController{
 										as: 'role'
 									}
 								]
+							},
+							{ 
+								model: Role,
+								as: 'assigned_role'
 							}
 						]
 					}
 				]
 			})
 			.then((userAuditReport) => {
-				if (!userAuditReport) {
-					return res.status(404).send({
-						message: 'UserAuditReport Not Found',
-					});
-				}
+				// if (!userAuditReport) {
+				// 	return res.status(404).send({
+				// 		message: 'UserAuditReport Not Found',
+				// 	});
+				// }
 				return res.status(200).send({
 					...{ userAuditReport },
 					...{
-						disableForm: !(userAuditReport.reporting_date.toDateString() === startOfDay(new Date(req.body.reportingDate)).toDateString())
+						disableForm: userAuditReport ? !(userAuditReport.reporting_date.toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString()) : false
 					}
 				});
 			})

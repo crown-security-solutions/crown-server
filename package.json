@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --inspect ./lib/server.ts",
+    "dev": "ts-node-dev --inspect=7000 -- ./lib/server.ts",
     "prod": "node ./dist/server.js",
     "start": "npm run build && npm run prod"
   },
@@ -23,7 +23,6 @@
     "lodash": "^4.17.15",
     "morgan": "^1.7.0",
     "mysql2": "^2.0.1",
-    "nodemon": "^2.0.2",
     "rootpath": "^0.1.2",
     "sequelize": "^5.21.2",
     "sequelize-cli": "^5.5.1",
@@ -33,6 +32,8 @@
     "@types/bluebird": "^3.5.29",
     "@types/sequelize": "^4.28.8",
     "@types/validator": "^12.0.1",
-    "ts-node": "^8.6.2"
+		"ts-node": "^8.6.2",
+		"ts-node-dev": "^1.0.0-pre.44",
+		"node-dev": "^4.0.0"
   }
 }
