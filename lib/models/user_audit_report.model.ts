@@ -31,7 +31,16 @@ UserAuditReport.init(
 UserAuditReport.hasMany(UserAudit, {
 	foreignKey: 'audit_report_id',
 	sourceKey: 'id',
-	as: 'user_audits'
+	as: 'user_audits',
+	onDelete: 'CASCADE',
+	hooks: true
+});
+
+UserAuditReport.hasMany(UserAudit, {
+	foreignKey: 'audit_report_id',
+	sourceKey: 'id',
+	onDelete: 'CASCADE',
+	hooks: true
 });
 
 UserAudit.belongsTo(UserAuditReport, {

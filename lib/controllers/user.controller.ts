@@ -5,6 +5,9 @@ import { secret } from '../config/database';
 import { Role } from '../models/role.model';
 import { UserAudit } from '../models/user_audit.model';
 import { Helper } from '../config/helper';
+import { UserAuditReport } from '../models/user_audit_report.model';
+import { Op } from 'sequelize';
+import { startOfDay, endOfDay } from 'date-fns';
 
 export class UserController{
 	authenticate(req: Request, res: Response) {
@@ -144,5 +147,43 @@ export class UserController{
           .catch((error) => res.status(400).send(error));
       })
       .catch((error) => res.status(400).send(error));
-  }
+	}
+	
+	checkCrossOt(req: Request, res: Response) {
+		UserAuditReport
+			.findAll({
+				where: {
+					reporting_date: {
+						[Op.between]: [
+							startOfDay(new Date(req.body.reportingDate)),
+							endOfDay(new Date(req.body.reportingDate))
+						]
+					}
+				},
+				include: [
+					{
+						model: UserAudit,
+						as: 'user_audits'
+					}
+				]
+			})
+			.then((userAuditReports: Array<any>) => {
+				let user_OT_found = [];
+				let user_CROSS_OT_found = [];
+				let user_CROSS_OT_not_possible = [];
+				userAuditReports.forEach(report => {
+					user_OT_found =  report.user_audits.filter(x => 
+						x.user_id === +req.body.user_id && report.shift !== +req.body.shift && report.site_id === req.body.siteId);
+					user_CROSS_OT_found =  report.user_audits.filter(x => 
+						x.user_id === +req.body.user_id && report.site_id !== req.body.siteId);
+					user_CROSS_OT_not_possible =  report.user_audits.filter(x => 
+						x.user_id === +req.body.user_id && report.shift === +req.body.shift && report.site_id !== req.body.siteId);
+				});
+				return res.status(200).send({
+					ot: user_OT_found.length, 
+					cross_ot: user_CROSS_OT_found.length, 
+					cross_ot_not_possible: user_CROSS_OT_not_possible.length
+				});
+			})
+	}
 }

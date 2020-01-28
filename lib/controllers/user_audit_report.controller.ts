@@ -8,6 +8,26 @@ import { Op } from 'sequelize';
 
 export class UserAuditReportController{
 	create(req: Request, res: Response) {
+		if (req.body.userAuditReportId) {
+			UserAuditReport
+			.findOne({
+				where: {
+					id: req.body.userAuditReportId
+				},
+				include: [
+					{
+						model: UserAudit,
+						as: 'user_audits'
+					}
+				]
+			}).then((userAuditReport) => {
+				if (userAuditReport === null) {
+					console.log('Not found!');
+				} else {
+					userAuditReport.destroy();
+				}
+			});
+		}
 		return UserAuditReport
 			.create({
 				reporting_date: startOfDay(new Date(req.body.reportingDate)),

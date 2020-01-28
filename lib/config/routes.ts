@@ -25,6 +25,7 @@ export class Routes {
 		app.get('/api/users/role/:roleId', this.userController.retrieveByRole);
 		app.put('/api/users/:userId', this.userController.update);
 		app.delete('/api/users/:userId', this.userController.destroy);
+		app.post('/api/users/check-cross-ot', this.userController.checkCrossOt);
 		
 		// sites API
 		app.post('/api/sites', this.siteController.create);
