@@ -89,7 +89,7 @@ export class UserController{
 	retrieveByRole(req: Request, res: Response) {
     return User
       .findAll({
-				attributes: ['id', 'role_id', 'firstname', 'corp_email'],
+				attributes: ['id', 'role_id', 'firstname', 'corp_email', 'code'],
 				where: {
 					role_id: req.params.roleId,
 					active: true

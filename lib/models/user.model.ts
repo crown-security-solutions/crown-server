@@ -7,7 +7,8 @@ export class User extends Model {
   public id!: number;
   public role_id!: number;
 	public code: string;
-	public firstname!: string;
+  public firstname!: string;
+  public middlename!: string;
 	public lastname!: string;
 	public email: string;
 	public corp_email!: string;
@@ -38,6 +39,10 @@ User.init(
     },
 		code: DataTypes.STRING,
 		firstname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    middlename: {
       type: DataTypes.STRING,
       allowNull: false
     },
