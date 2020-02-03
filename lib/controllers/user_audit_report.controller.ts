@@ -90,7 +90,7 @@ export class UserAuditReportController{
 						as: 'user_audits',
 						include: [
 							{
-								attributes: ['id', 'role_id', 'firstname', 'corp_email', 'code'],
+								attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code'],
 								model: User,
 								as: 'user',
 								include: [
