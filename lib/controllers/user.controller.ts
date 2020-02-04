@@ -62,10 +62,11 @@ export class UserController{
   list(req: Request, res: Response) {
     return User
       .findAll({
-        order: [
-          ['createdAt', 'DESC'],
-        ],
-        include: [Role, UserAudit]
+				attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code'],
+        include: [{
+					model: Role,
+					as: 'role'
+				}]
       })
       .then((users) => res.status(200).send(users))
       .catch((error) => res.status(400).send(error));
