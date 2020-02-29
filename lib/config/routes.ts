@@ -48,5 +48,6 @@ export class Routes {
 		app.put('/api/reports/:userAuditReportId', this.userAuditReportController.update);
 		app.delete('/api/reports/:userAuditReportId', this.userAuditReportController.destroy);
 		app.post('/api/reports/find-report', this.userAuditReportController.find);
+		app.post('/api/reports/view-report', this.userAuditReportController.filterList);
 	}
 }

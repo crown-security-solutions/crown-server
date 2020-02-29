@@ -159,4 +159,52 @@ export class UserAuditReportController{
 			})
 			.catch((error) => res.status(400).send(error));
 	}
+
+	filterList(req: Request, res: Response) {
+		return UserAuditReport
+			.findAll({
+				where: {
+					reporting_date: {
+						[Op.between]: [
+							startOfDay(new Date(req.body.startDate)),
+							endOfDay(new Date(req.body.endDate))
+						]
+					}
+				},
+				include: [
+					{
+						model: UserAudit,
+						as: 'user_audits',
+						include: [
+							{
+								attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code'],
+								model: User,
+								as: 'user',
+								include: [
+									{ 
+										model: Role,
+										as: 'role'
+									}
+								]
+							},
+							{ 
+								model: Role,
+								as: 'assigned_role'
+							}
+						]
+					}
+				]
+			})
+			.then((userAuditReports) => {
+				// if (!userAuditReport) {
+				// 	return res.status(404).send({
+				// 		message: 'UserAuditReport Not Found',
+				// 	});
+				// }
+				return res.status(200).send({
+					...{ userAuditReports },
+				});
+			})
+			.catch((error) => res.status(400).send(error));
+	}
 }
