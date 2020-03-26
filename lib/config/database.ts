@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize";
 
 export const database = new Sequelize({
-  username: "17u44gtPN7",
-	password: "1Uf30QhZbn",
-	database: "17u44gtPN7",
+  username: "KjFPObnKzN",
+	password: "KjFboFQ04Q",
+	database: "KjFPObnKzN",
 	host: "remotemysql.com",
 	port: 3306,
 	dialect: "mysql"

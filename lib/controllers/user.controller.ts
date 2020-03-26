@@ -6,7 +6,7 @@ import { Role } from '../models/role.model';
 import { UserAudit } from '../models/user_audit.model';
 import { Helper } from '../config/helper';
 import { UserAuditReport } from '../models/user_audit_report.model';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { startOfDay, endOfDay } from 'date-fns';
 
 export class UserController{
@@ -62,7 +62,7 @@ export class UserController{
   list(req: Request, res: Response) {
     return User
       .findAll({
-				attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code'],
+				attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code', [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]],
         include: [{
 					model: Role,
 					as: 'role'
@@ -90,7 +90,7 @@ export class UserController{
 	retrieveByRole(req: Request, res: Response) {
     return User
       .findAll({
-				attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code'],
+				attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code', [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]],
 				where: {
 					role_id: req.params.roleId,
 					active: true
@@ -156,8 +156,8 @@ export class UserController{
 				where: {
 					reporting_date: {
 						[Op.between]: [
-							startOfDay(new Date(req.body.reportingDate)),
-							endOfDay(new Date(req.body.reportingDate))
+							startOfDay(new Date(req.body.reportingDate)).toISOString(),
+							endOfDay(new Date(req.body.reportingDate)).toISOString()
 						]
 					}
 				},

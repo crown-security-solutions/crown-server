@@ -1,6 +1,7 @@
 import { Sequelize, Model, DataTypes, BuildOptions } from "sequelize";
 import { database } from "../config/database";
 import { UserAudit } from "./user_audit.model";
+import { Site } from "./site.model";
 
 export class UserAuditReport extends Model {
   public id!: number;
@@ -46,6 +47,12 @@ UserAuditReport.hasMany(UserAudit, {
 UserAudit.belongsTo(UserAuditReport, {
 	foreignKey: 'audit_report_id',
 	targetKey: 'id'
+});
+
+UserAuditReport.hasOne(Site, {
+	foreignKey: 'id',
+	sourceKey: 'site_id',
+	as: 'site'
 });
 
 // UserAuditReport.sync({ force: true }).then(() => console.log("UserAuditReport table created"));

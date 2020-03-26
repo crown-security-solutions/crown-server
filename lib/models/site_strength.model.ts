@@ -5,7 +5,7 @@ export class SiteStrength extends Model {
   public id!: number;
 	public site_id: number;
 	public strength_count: number;
-	public requirement_date: Date;
+	public requirement_date?: Date;
 	public shift: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;

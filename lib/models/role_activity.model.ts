@@ -25,4 +25,4 @@ RoleActivity.init(
   }
 );
 
-// RoleActivity.sync({ force: true }).then(() => console.log("RoleActivity table created"));
+// RoleActivity.sync({ force: true }).then(() => console.log("RoleActivity table created")); 

@@ -22,6 +22,10 @@ Site.init(
       primaryKey: true
 		},
 		name: DataTypes.STRING,
+		code: DataTypes.STRING,
+		branch_name: DataTypes.STRING,
+		location: DataTypes.STRING,
+		zone: DataTypes.STRING,
     address: DataTypes.STRING,
     contact: DataTypes.STRING,
 		contact_person: DataTypes.STRING,

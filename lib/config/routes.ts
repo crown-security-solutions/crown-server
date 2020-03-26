@@ -33,7 +33,7 @@ export class Routes {
 		app.get('/api/sites/:siteId', this.siteController.retrieve);
 		app.put('/api/sites/:siteId', this.siteController.update);
 		app.delete('/api/sites/:siteId', this.siteController.destroy);
-	
+		// app.post('/api/sites/update-strength', this.siteController.updateSiteStrength);
 		// roles API
 		app.post('/api/roles', this.roleController.create);
 		app.get('/api/roles', this.roleController.list);
