@@ -9,7 +9,7 @@ class App {
 		public routePrv: Routes = new Routes();
 
     constructor() {
-        this.app = express();
+				this.app = express();
 				this.config();
 				this.routePrv.routes(this.app);
     }
@@ -20,6 +20,7 @@ class App {
         //support application/x-www-form-urlencoded post data
 				this.app.use(bodyParser.urlencoded({ extended: false }));
 				this.app.use(cors());
+				this.app.options('*', cors());
     }
 
 }
