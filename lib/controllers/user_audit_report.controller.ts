@@ -227,6 +227,7 @@ export class UserAuditReportController{
 							reportResultObject['ot_s' + z.shift] = z.user_audits.filter(b => b.ot).length;
 							reportResultObject['cross_ot_s' + z.shift] = z.user_audits.filter(b => b.cross_ot).length;
 							reportResultObject['grooming_failure_s' + z.shift] = z.user_audits.filter(b => b.grooming_failure).length;
+							reportResultObject['idf_s' + z.shift] = z.user_audits.filter(b => b.idf).length;
 							lastShift = z.shift;
 						});
 						if(lastShift < maxShift) {
@@ -234,6 +235,7 @@ export class UserAuditReportController{
 								reportResultObject['ot_s' + e] = 0;
 								reportResultObject['cross_ot_s' + e] = 0;
 								reportResultObject['grooming_failure_s' + e] = 0;
+								reportResultObject['idf_s' + e] = 0;
 							});
 						}
 						result.push(reportResultObject);
