@@ -223,6 +223,7 @@ export class UserAuditReportController{
 							reportResultObject['zone'] = firstSiteWiseReport.site.zone;
 						}
 						let lastShift = 1;
+						//calculating ots, cross ots etc for each site date wise
 						siteWiseReports.forEach((z: any) => {
 							reportResultObject['ot_s' + z.shift] = z.user_audits.filter(b => b.ot).length;
 							reportResultObject['cross_ot_s' + z.shift] = z.user_audits.filter(b => b.cross_ot).length;
@@ -230,6 +231,7 @@ export class UserAuditReportController{
 							reportResultObject['idf_s' + z.shift] = z.user_audits.filter(b => b.idf).length;
 							lastShift = z.shift;
 						});
+						//filling up redundant zeros if site have less shift than max shifts
 						if(lastShift < maxShift) {
 							range(lastShift + 1, maxShift + 1).forEach(e => {
 								reportResultObject['ot_s' + e] = 0;
@@ -238,7 +240,10 @@ export class UserAuditReportController{
 								reportResultObject['idf_s' + e] = 0;
 							});
 						}
-						result.push(reportResultObject);
+						// if report is not empty then push
+						if (reportResultObject['reporting_date'] !== undefined) {
+							result.push(reportResultObject);
+						}
 					});
 				});
 				return res.status(200).send({
