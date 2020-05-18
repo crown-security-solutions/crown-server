@@ -119,7 +119,8 @@ export class UserAuditReportController{
 				return res.status(200).send({
 					...{ userAuditReport },
 					...{
-						disableForm: userAuditReport ? !(userAuditReport.reporting_date.toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString()) : !(startOfDay(new Date(req.body.reportingDate)).toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString())
+						disableForm: userAuditReport ? true : !(startOfDay(new Date(req.body.reportingDate)).toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString()),
+						showEdit: userAuditReport ? (userAuditReport.reporting_date.toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString()) : false
 					}
 				});
 			})
