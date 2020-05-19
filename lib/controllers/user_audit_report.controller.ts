@@ -3,10 +3,11 @@ import { UserAudit } from '../models/user_audit.model';
 import { UserAuditReport } from '../models/user_audit_report.model';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
-import { startOfDay, endOfDay} from 'date-fns';
+import { format } from 'date-fns';
 import { Op, Sequelize } from 'sequelize';
 import { Site } from '../models/site.model';
 import { head, range } from 'lodash';
+import { Helper } from '../config/helper';
 
 export class UserAuditReportController{
 	create(req: Request, res: Response) {
@@ -32,7 +33,7 @@ export class UserAuditReportController{
 		}
 		return UserAuditReport
 			.create({
-				reporting_date: startOfDay(new Date(req.body.reportingDate)),
+				reporting_date: Helper.formatDate(req.body.reportingDate),
 				site_id: req.body.siteId,
 				shift: req.body.shift,
 				user_audits: req.body.user_audits
@@ -77,12 +78,7 @@ export class UserAuditReportController{
 		return UserAuditReport
 			.findOne({
 				where: {
-					reporting_date: {
-						[Op.between]: [
-							startOfDay(new Date(req.body.reportingDate)).toISOString(),
-							endOfDay(new Date(req.body.reportingDate)).toISOString()
-						]
-					},
+					reporting_date: Helper.formatDate(req.body.reportingDate),
 					site_id: req.body.siteId,
 					shift: req.body.shift
 				},
@@ -119,8 +115,8 @@ export class UserAuditReportController{
 				return res.status(200).send({
 					...{ userAuditReport },
 					...{
-						disableForm: userAuditReport ? true : !(startOfDay(new Date(req.body.reportingDate)).toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString()),
-						showEdit: userAuditReport ? (userAuditReport.reporting_date.toDateString() === startOfDay(new Date(req.body.userTodayDate)).toDateString()) : false
+						disableForm: userAuditReport ? true : !(Helper.formatDate(req.body.reportingDate) === Helper.formatDate(req.body.userTodayDate)),
+						showEdit: userAuditReport ? (format(new Date(userAuditReport.reporting_date), 'yyyy-MM-dd') === Helper.formatDate(req.body.userTodayDate)) : false
 					}
 				});
 			})
@@ -169,8 +165,8 @@ export class UserAuditReportController{
 				where: {
 					reporting_date: {
 						[Op.between]: [
-							startOfDay(new Date(req.body.startDate)).toISOString(),
-							endOfDay(new Date(req.body.endDate)).toISOString()
+							Helper.formatDate(req.body.startDate),
+							Helper.formatDate(req.body.endDate)
 						]
 					}
 				},
@@ -209,12 +205,12 @@ export class UserAuditReportController{
 				// 	});
 				// }
 				let result = [];
-				const distinctReportDates = [... new Set(userAuditReports.map(x => x.reporting_date.toISOString()))];
+				const distinctReportDates = [... new Set(userAuditReports.map(x => format(new Date(x.reporting_date), 'yyyy-MM-dd')))];
 				const distinctSites = [... new Set(userAuditReports.map(x => +x.site_id))];
 				const maxShift = Math.max(...[... new Set(userAuditReports.map(x => +x.shift))]);
 				distinctReportDates.forEach(a => {
 					distinctSites.forEach(x => {
-						const siteWiseReports = userAuditReports.filter(y => +y.site_id === x && y.reporting_date.toISOString() === a);
+						const siteWiseReports = userAuditReports.filter(y => +y.site_id === x && format(new Date(y.reporting_date), 'yyyy-MM-dd') === a);
 						const reportResultObject = {}
 						if(siteWiseReports.length) {
 							reportResultObject['reporting_date'] = a;
@@ -226,8 +222,11 @@ export class UserAuditReportController{
 						let lastShift = 1;
 						//calculating ots, cross ots etc for each site date wise
 						siteWiseReports.forEach((z: any) => {
+							reportResultObject['short_s' + z.shift] = z.user_audits.filter(b => !b.attendance).length;
 							reportResultObject['ot_s' + z.shift] = z.user_audits.filter(b => b.ot).length;
 							reportResultObject['cross_ot_s' + z.shift] = z.user_audits.filter(b => b.cross_ot).length;
+							reportResultObject['night_day_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_ot).length;
+							reportResultObject['night_day_cross_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_cross_ot).length;
 							reportResultObject['grooming_failure_s' + z.shift] = z.user_audits.filter(b => b.grooming_failure).length;
 							reportResultObject['idf_s' + z.shift] = z.user_audits.filter(b => b.idf).length;
 							lastShift = z.shift;
@@ -235,8 +234,11 @@ export class UserAuditReportController{
 						//filling up redundant zeros if site have less shift than max shifts
 						if(lastShift < maxShift) {
 							range(lastShift + 1, maxShift + 1).forEach(e => {
+								reportResultObject['short_s' + e] = 0;
 								reportResultObject['ot_s' + e] = 0;
 								reportResultObject['cross_ot_s' + e] = 0;
+								reportResultObject['night_day_ot_s' + e] = 0;
+								reportResultObject['night_day_cross_ot_s' + e] = 0;
 								reportResultObject['grooming_failure_s' + e] = 0;
 								reportResultObject['idf_s' + e] = 0;
 							});

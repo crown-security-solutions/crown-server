@@ -7,7 +7,8 @@ import { UserAudit } from '../models/user_audit.model';
 import { Helper } from '../config/helper';
 import { UserAuditReport } from '../models/user_audit_report.model';
 import { Op, Sequelize } from 'sequelize';
-import { startOfDay, endOfDay } from 'date-fns';
+import { subDays, format } from 'date-fns';
+import { Site } from '../models/site.model';
 
 export class UserController{
 	authenticate(req: Request, res: Response) {
@@ -154,35 +155,56 @@ export class UserController{
 		UserAuditReport
 			.findAll({
 				where: {
-					reporting_date: {
-						[Op.between]: [
-							startOfDay(new Date(req.body.reportingDate)).toISOString(),
-							endOfDay(new Date(req.body.reportingDate)).toISOString()
-						]
-					}
+          // fetching yesterdays user audit report for checking night/day ot
+          reporting_date: {
+            [Op.between]: [
+              		format(subDays(new Date(req.body.reportingDate), 1), 'yyyy-MM-dd'),
+              		Helper.formatDate(req.body.reportingDate)
+              	]
+          }
 				},
 				include: [
 					{
 						model: UserAudit,
-						as: 'user_audits'
+            as: 'user_audits',
+            where: {
+              user_id: +req.body.user_id
+            }
+          },
+          {
+						model: Site,
+						as: 'site'
 					}
 				]
 			})
 			.then((userAuditReports: Array<any>) => {
 				let user_OT_found = [];
 				let user_CROSS_OT_found = [];
-				let user_CROSS_OT_not_possible = [];
-				userAuditReports.forEach(report => {
+        let user_CROSS_OT_not_possible = [];
+        let user_NIGHT_DAY_OT_found = [];
+        let user_NIGHT_DAY_CROSS_OT_found = [];
+        let todaysReports = userAuditReports.filter(x => format(new Date(x.reporting_date), 'yyyy-MM-dd') === Helper.formatDate(req.body.reportingDate));
+        let yesterdaysReports = userAuditReports.filter(x => format(new Date(x.reporting_date), 'yyyy-MM-dd') === format(subDays(new Date(req.body.reportingDate), 1), 'yyyy-MM-dd'));
+        
+				todaysReports.forEach(report => {
 					user_OT_found =  report.user_audits.filter(x => 
-						x.user_id === +req.body.user_id && report.shift !== +req.body.shift && report.site_id === req.body.siteId);
+						report.shift === +req.body.shift - 1 && report.site_id === +req.body.siteId);
 					user_CROSS_OT_found =  report.user_audits.filter(x => 
-						x.user_id === +req.body.user_id && report.site_id !== req.body.siteId);
+						report.site_id !== +req.body.siteId && report.shift === +req.body.shift - 1);
 					user_CROSS_OT_not_possible =  report.user_audits.filter(x => 
-						x.user_id === +req.body.user_id && report.shift === +req.body.shift && report.site_id !== req.body.siteId);
-				});
+						report.shift === +req.body.shift && report.site_id !== +req.body.siteId);
+          });
+        yesterdaysReports.forEach(report => {
+          user_NIGHT_DAY_OT_found =  report.user_audits.filter(x => 
+            report.shift === report.site.shift && +req.body.shift === 1 && report.site_id === +req.body.siteId);
+          user_NIGHT_DAY_CROSS_OT_found =  report.user_audits.filter(x => 
+            report.shift === report.site.shift && +req.body.shift === 1 && report.site_id !== +req.body.siteId);
+        });
 				return res.status(200).send({
 					ot: user_OT_found.length, 
-					cross_ot: user_CROSS_OT_found.length, 
+          cross_ot: user_CROSS_OT_found.length, 
+          night_day_ot: user_NIGHT_DAY_OT_found.length,
+          night_day_cross_ot: user_NIGHT_DAY_CROSS_OT_found.length,
 					cross_ot_not_possible: user_CROSS_OT_not_possible.length
 				});
 			})

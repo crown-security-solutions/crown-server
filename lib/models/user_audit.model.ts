@@ -12,6 +12,8 @@ export class UserAudit extends Model {
 	attendance: boolean;
 	ot: boolean;
 	cross_ot: boolean;
+	night_day_ot: boolean;
+	night_day_cross_ot: boolean;
 	grooming_failure: boolean;
 	beard: boolean;
 	uniform: boolean;
@@ -38,7 +40,9 @@ UserAudit.init(
 		assigned_role_id: DataTypes.BIGINT,
     attendance: DataTypes.BOOLEAN,
     ot: DataTypes.BOOLEAN,
-    cross_ot: DataTypes.BOOLEAN,
+	cross_ot: DataTypes.BOOLEAN,
+	night_day_ot: DataTypes.BOOLEAN,
+    night_day_cross_ot: DataTypes.BOOLEAN,
     grooming_failure: DataTypes.BOOLEAN,
     beard: DataTypes.BOOLEAN,
     uniform: DataTypes.BOOLEAN,

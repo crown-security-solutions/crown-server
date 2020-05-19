@@ -2,6 +2,7 @@ import { Sequelize, Model, DataTypes, BuildOptions } from "sequelize";
 import { database } from "../config/database";
 import { UserAudit } from "./user_audit.model";
 import { Site } from "./site.model";
+import { format, parseISO } from 'date-fns';
 
 export class UserAuditReport extends Model {
   public id!: number;
@@ -15,13 +16,13 @@ export class UserAuditReport extends Model {
 UserAuditReport.init(
   {
 		id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true
+			type: DataTypes.INTEGER.UNSIGNED,
+			autoIncrement: true,
+			primaryKey: true
 		},
-		reporting_date: DataTypes.DATE,
-    site_id: DataTypes.INTEGER,
-    shift: DataTypes.INTEGER
+		reporting_date: DataTypes.DATEONLY,
+		site_id: DataTypes.INTEGER,
+		shift: DataTypes.INTEGER
   },
   {
     tableName: "user_audit_reports",

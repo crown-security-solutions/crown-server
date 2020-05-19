@@ -1,5 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import { secret } from '../config/database';
+import { format} from 'date-fns';
 
 export namespace Helper {
 	export function encryptData(data) {
@@ -20,5 +21,10 @@ export namespace Helper {
 		} catch (e) {
 			console.log(e);
 		}
+	}
+
+	export function formatDate(dateString: string) {
+		const reportingDate =  dateString.split('/');
+		return format(new Date(+reportingDate[2], +reportingDate[0] - 1, +reportingDate[1]), 'yyyy-MM-dd');
 	}
 } 
