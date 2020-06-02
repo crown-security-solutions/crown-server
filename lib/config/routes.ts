@@ -3,12 +3,14 @@ import { UserController } from "../controllers/user.controller";
 import { SiteController } from "../controllers/site.controller";
 import { RoleController } from "../controllers/role.controller";
 import { UserAuditReportController } from "../controllers/user_audit_report.controller";
+import { AdhocController } from "../controllers/adhoc.controller";
 
 export class Routes {  
 	public userController: UserController = new UserController();
 	public siteController: SiteController = new SiteController();
 	public roleController: RoleController = new RoleController();
 	public userAuditReportController: UserAuditReportController = new UserAuditReportController();
+	public adhocController: AdhocController = new AdhocController();
 
 	public routes(app): void {          
 			app.route('/api')
@@ -40,6 +42,19 @@ export class Routes {
 		app.get('/api/roles/:roleId', this.roleController.retrieve);
 		app.put('/api/roles/:roleId', this.roleController.update);
 		app.delete('/api/roles/:roleId', this.roleController.destroy);
+
+		// adhoc_types API
+		app.post('/api/adhoc', this.adhocController.create);
+		app.get('/api/adhoc', this.adhocController.list);
+		app.get('/api/adhoc/:adhocTypeId', this.adhocController.retrieve);
+		app.put('/api/adhoc/:adhocTypeId', this.adhocController.update);
+		app.delete('/api/adhoc/:adhocTypeId', this.adhocController.destroy);
+
+		// adhoc new users api
+		app.get('/api/adhoc-new-users', this.adhocController.listUsers);
+		app.post('/api/adhoc-new-users', this.adhocController.createUser);
+		app.put('/api/adhoc-new-users', this.adhocController.updateUser);
+		app.delete('/api/adhoc-new-users', this.adhocController.destroyUser);
 		
 		// user_audit_reports API
 		app.post('/api/reports', this.userAuditReportController.create);
