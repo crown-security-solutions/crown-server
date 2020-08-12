@@ -196,9 +196,9 @@ export class UserController{
           });
         yesterdaysReports.forEach(report => {
           user_NIGHT_DAY_OT_found =  report.user_audits.filter(x => 
-            report.shift === report.site.shift && +req.body.shift === 1 && report.site_id === +req.body.siteId);
+            +report.shift === 3 && +req.body.shift === 1 && report.site_id === +req.body.siteId);
           user_NIGHT_DAY_CROSS_OT_found =  report.user_audits.filter(x => 
-            report.shift === report.site.shift && +req.body.shift === 1 && report.site_id !== +req.body.siteId);
+            +report.shift === 3 && +req.body.shift === 1 && report.site_id !== +req.body.siteId);
         });
 				return res.status(200).send({
 					ot: user_OT_found.length, 

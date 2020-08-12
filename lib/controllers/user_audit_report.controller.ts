@@ -8,6 +8,7 @@ import { Op, Sequelize } from 'sequelize';
 import { Site } from '../models/site.model';
 import { head, range } from 'lodash';
 import { Helper } from '../config/helper';
+import { SiteStrength } from '../models/site_strength.model';
 
 export class UserAuditReportController{
 	create(req: Request, res: Response) {
@@ -194,7 +195,17 @@ export class UserAuditReportController{
 					},
 					{
 						model: Site,
-						as: 'site'
+						as: 'site',
+						include: [
+							{
+								model: SiteStrength,
+								order: [
+									['requirement_date', 'DESC']
+								],
+								limit: 1,
+								as: 'site_strengths'
+							}
+						]
 					}
 				]
 			})
@@ -222,7 +233,10 @@ export class UserAuditReportController{
 						let lastShift = 1;
 						//calculating ots, cross ots etc for each site date wise
 						siteWiseReports.forEach((z: any) => {
-							reportResultObject['short_s' + z.shift] = z.user_audits.filter(b => !b.attendance).length;
+							const site_strength = head(z.site.site_strengths);
+							const shift_string = +z.shift === 1 ? 'day' : +z.shift === 2 ? 'general' : 'night';
+							const strength_count = +site_strength['strength_count_' + shift_string];
+							reportResultObject['short_s' + z.shift] = z.user_audits.length <  strength_count? strength_count - z.user_audits.length : 0;
 							reportResultObject['ot_s' + z.shift] = z.user_audits.filter(b => b.ot).length;
 							reportResultObject['cross_ot_s' + z.shift] = z.user_audits.filter(b => b.cross_ot).length;
 							reportResultObject['night_day_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_ot).length;
