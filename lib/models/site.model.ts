@@ -4,7 +4,8 @@ import { SiteStrength } from "./site_strength.model";
 
 export class Site extends Model {
   public id!: number;
-	public name: string;
+  public name: string;
+  public site_code: string;
 	public shift: number;
 	public active: boolean;
   public readonly createdAt!: Date;
@@ -18,7 +19,8 @@ Site.init(
       autoIncrement: true,
       primaryKey: true
 		},
-		name: DataTypes.STRING,
+    name: DataTypes.STRING,
+    site_code: DataTypes.STRING,
 		shift: DataTypes.INTEGER,
     active: DataTypes.BOOLEAN
   },

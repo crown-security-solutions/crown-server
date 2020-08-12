@@ -4,9 +4,10 @@ import { database } from "../config/database";
 export class SiteStrength extends Model {
   public id!: number;
 	public site_id: number;
-	public strength_count: number;
+  public strength_count_day: number;
+  public strength_count_general: number;
+  public strength_count_night: number;
 	public requirement_date?: Date;
-	public shift: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -19,9 +20,10 @@ SiteStrength.init(
       primaryKey: true
 		},
 		site_id: DataTypes.BIGINT,
-    strength_count: DataTypes.INTEGER,
-		requirement_date: DataTypes.DATE,
-		shift: DataTypes.INTEGER
+    strength_count_day: DataTypes.INTEGER,
+    strength_count_general: DataTypes.INTEGER,
+    strength_count_night: DataTypes.INTEGER,
+		requirement_date: DataTypes.DATE
   },
   {
     tableName: "site_strengths",

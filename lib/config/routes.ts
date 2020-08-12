@@ -36,6 +36,7 @@ export class Routes {
 		app.put('/api/sites/:siteId', this.siteController.update);
 		app.delete('/api/sites/:siteId', this.siteController.destroy);
 		// app.post('/api/sites/update-strength', this.siteController.updateSiteStrength);
+		//  app.post('/api/sites/import-sites-strength', this.siteController.importSiteAndStrength);
 		// roles API
 		app.post('/api/roles', this.roleController.create);
 		app.get('/api/roles', this.roleController.list);

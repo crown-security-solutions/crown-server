@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { Site } from '../models/site.model';
 import { SiteStrength } from '../models/site_strength.model';
 import { range } from 'lodash';
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const {parse, stringify} = require('flatted');
 
 export class SiteController{
 	create(req: Request, res: Response) {
@@ -25,7 +27,11 @@ export class SiteController{
         ],
         include: [
 					{ 
-						model: SiteStrength,
+            model: SiteStrength,
+            order: [
+              ['requirement_date', 'DESC']
+            ],
+            limit: 1,
 						as: 'site_strengths' 
 					}
 				]
@@ -106,5 +112,42 @@ export class SiteController{
 				SiteStrength.bulkCreate(site_strengths).then((x) => res.status(200).send(x));
 			})
       .catch((error) => res.status(400).send(error));
+  }
+
+  async importSiteAndStrength(req: Request, res: Response) {
+    const creds = require('../config/crown-creds.json');
+    const doc = new GoogleSpreadsheet('1ggI3kwIBxgQnO-ek2VqhQC7xZVtt0TmE1Y5O-EWIawA');
+    await doc.useServiceAccountAuth(creds);
+    await doc.loadInfo();
+    const site_db_sheet = doc.sheetsByIndex[2];
+    const rows = await site_db_sheet.getRows();
+
+    const sites : Site[] = [];
+    const site_strengths : SiteStrength[] = [];
+
+    rows.forEach(x => {
+      const site: any = {
+        id: x.id,
+        name: x.name,
+        site_code: x.site_code,
+        shift: +x.shift || 0
+      };
+      sites.push(site);
+
+      const site_strength: any = {
+        site_id: +x.id,
+        strength_count_day: +x.day || 0,
+        strength_count_general: +x.general || 0,
+        strength_count_night: +x.night || 0
+      };
+      site_strengths.push(site_strength);
+
+    });
+
+    // res.send({sites,site_strengths});
+    Site.bulkCreate(sites).then((x) => {
+      SiteStrength.bulkCreate(site_strengths).then((y) => res.status(200).send(y));
+    });
+
   }
 }
