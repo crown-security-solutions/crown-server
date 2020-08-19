@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Site } from '../models/site.model';
 import { SiteStrength } from '../models/site_strength.model';
 import { range } from 'lodash';
+import { SiteStrengthDetails } from '../models/site_strength_details.model';
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const {parse, stringify} = require('flatted');
 
@@ -119,35 +120,100 @@ export class SiteController{
     const doc = new GoogleSpreadsheet('1ggI3kwIBxgQnO-ek2VqhQC7xZVtt0TmE1Y5O-EWIawA');
     await doc.useServiceAccountAuth(creds);
     await doc.loadInfo();
-    const site_db_sheet = doc.sheetsByIndex[2];
-    const rows = await site_db_sheet.getRows();
+    // const site_db_sheet = doc.sheetsByIndex[2];
+    // const rows = await site_db_sheet.getRows();
+    const site_strength_details_sheet = doc.sheetsByIndex[3];
+    const rows = await site_strength_details_sheet.getRows();
 
-    const sites : Site[] = [];
-    const site_strengths : SiteStrength[] = [];
+    //inserting the whole sheet of site_db
+    // const sites : Site[] = [];
+    // const site_strengths : SiteStrength[] = [];
 
-    rows.forEach(x => {
-      const site: any = {
-        id: x.id,
-        name: x.name,
-        site_code: x.site_code,
-        shift: +x.shift || 0
-      };
-      sites.push(site);
+    // rows.forEach(x => {
+    //   const site: any = {
+    //     id: x.id,
+    //     name: x.name,
+    //     site_code: x.site_code,
+    //     shift: +x.shift || 0
+    //   };
+    //   sites.push(site);
 
-      const site_strength: any = {
-        site_id: +x.id,
-        strength_count_day: +x.day || 0,
-        strength_count_general: +x.general || 0,
-        strength_count_night: +x.night || 0
-      };
-      site_strengths.push(site_strength);
+    //   const site_strength: any = {
+    //     site_id: +x.id,
+    //     strength_count_day: +x.day || 0,
+    //     strength_count_general: +x.general || 0,
+    //     strength_count_night: +x.night || 0
+    //   };
+    //   site_strengths.push(site_strength);
 
-    });
+    // });
 
-    // res.send({sites,site_strengths});
-    Site.bulkCreate(sites).then((x) => {
-      SiteStrength.bulkCreate(site_strengths).then((y) => res.status(200).send(y));
-    });
+    // // res.send({sites,site_strengths});
+    // Site.bulkCreate(sites).then((x) => {
+    //   SiteStrength.bulkCreate(site_strengths).then((y) => res.status(200).send(y));
+    // });
 
+    //updating the site_db data 
+    // const sites : Site[] = [];
+
+    // rows.forEach(x => {
+    //   if(x.site_code && x.site_code !== 'CSA-000') {
+    //     Site.update({shift_type_id: x.shift_type && +x.shift_type === 8 ? 2 : 1}, {
+    //       where: {
+    //         site_code: x.site_code
+    //       }
+    //     }).then((x:any) => {
+    //       sites.push(x);
+    //     })
+    //   }
+    // });
+
+    //creating site_strength_details data
+    let sites: Site[] = [];
+    Site
+      .findAll({
+        order: [
+          ['createdAt', 'DESC'],
+        ]
+      })
+      .then((data) => {
+        sites = data;
+        const site_strength_details: any[] = [];
+        const roleIdArray = {
+          'O':17,
+          'S':2,
+          'G':3,
+          'LS':16,
+          'CCTV':11
+        };
+        rows.forEach(x => {
+          if(x.site_code) {
+            const site = sites.find(y => x.site_code === y.site_code);
+            for (let i = 1; i <= 3; i++){
+              const shift_column = i === 1 ? 'day' : i === 2 ? 'general' : 'night';
+              if(+x[shift_column + '_shift'] !== 0) {
+                const roleWiseCountArray = x[shift_column + '_shift'].split('+');
+                roleWiseCountArray.forEach((roleCount) => {
+                  const [count, roleChar] = roleCount.trim().split(' ');
+                  site_strength_details.push({
+                    site_strength_id: site.id,
+                    role_id: roleIdArray[roleChar.trim()],
+                    shift: i,
+                    shift_type_id: x.shift_type && +x.shift_type === 8 ? 2 : 1,
+                    strength_count: +count.trim(),
+                    bill_rate: 0,
+                    wage_rate: 0
+                  });
+                });
+              }
+            }
+          }
+        });
+        SiteStrengthDetails.bulkCreate(site_strength_details).then((y) => {
+          res.send(y);
+        });
+        
+      })
+      .catch((error) => res.status(400).send(error));
   }
 }
