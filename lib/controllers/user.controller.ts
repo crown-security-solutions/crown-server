@@ -39,21 +39,7 @@ export class UserController{
 
 	create(req: Request, res: Response) {
     return User
-      .create({
-        name: req.body.name,
-        email: req.body.email,
-        role_id: req.body.role_id,
-        dob: req.body.dob,
-        gender: req.body.gender,
-        address: req.body.address,
-        pan: req.body.pan,
-        adhaar: req.body.adhaar,
-        bank_id: req.body.bank_id,
-        password: req.body.password,
-        verified: req.body.verified,
-        contact_number: req.body.contact_number,
-        active: req.body.active,
-      })
+      .create(req.body)
       .then((user) => {
 				const { password, ...userWithoutPassword } = user;
 				return res.status(201).send(userWithoutPassword)})
@@ -63,7 +49,30 @@ export class UserController{
   list(req: Request, res: Response) {
     return User
       .findAll({
-				attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code', [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]],
+        attributes: [
+        'id', 
+        'role_id',
+        'firstname',
+        'middlename',
+        'lastname',
+        'corp_email',
+        'email',
+        'code',
+        'dob',
+        'gender',
+        'address',
+        'pan',
+        'adhaar',
+        'contact_number',
+        'alternate_contact_number',
+        'linked_site_code',
+        'start_date',
+        'end_date',
+        'active',
+        'verified',
+        [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]
+      ],
+      limit: 10,
         include: [{
 					model: Role,
 					as: 'role'
@@ -116,7 +125,7 @@ export class UserController{
 
   update(req: Request, res: Response) {
     return User
-      .findByPk(req.params.userId, {
+      .findByPk(req.body.id, {
       })
       .then(user => {
         if (!user) {
@@ -125,9 +134,7 @@ export class UserController{
           });
         }
         return user
-          .update({
-            firstname: req.body.firstname || user.firstname,
-          })
+          .update(req.body)
           .then(() => res.status(200).send(user))
           .catch((error) => res.status(400).send(error));
       })
@@ -136,7 +143,7 @@ export class UserController{
 
   destroy(req: Request, res: Response) {
     return User
-      .findByPk(req.params.userId)
+      .findByPk(req.body.id)
       .then(user => {
         if (!user) {
           return res.status(400).send({
@@ -188,9 +195,19 @@ export class UserController{
         
 				todaysReports.forEach(report => {
 					user_OT_found =  report.user_audits.filter(x => 
-						report.shift === +req.body.shift - 1 && report.site_id === +req.body.siteId);
-					user_CROSS_OT_found =  report.user_audits.filter(x => 
-						report.site_id !== +req.body.siteId && report.shift === +req.body.shift - 1);
+              (
+                (report.shift === +req.body.shift - 1 && report.site.shift_type_id === 2) || 
+                (report.shift === 1 && +req.body.shift === 3 && report.site.shift_type_id === 1)
+              ) && 
+              report.site_id === +req.body.siteId
+            );
+          user_CROSS_OT_found =  report.user_audits.filter(x => 
+            (
+              (report.shift === +req.body.shift - 1 && report.site.shift_type_id === 2) || 
+              (report.shift === 1 && +req.body.shift === 3 && report.site.shift_type_id === 1)
+            ) && 
+            report.site_id !== +req.body.siteId 
+          );
 					user_CROSS_OT_not_possible =  report.user_audits.filter(x => 
 						report.shift === +req.body.shift && report.site_id !== +req.body.siteId);
           });
