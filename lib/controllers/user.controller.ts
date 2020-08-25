@@ -72,7 +72,6 @@ export class UserController{
         'verified',
         [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]
       ],
-      limit: 10,
         include: [{
 					model: Role,
 					as: 'role'
