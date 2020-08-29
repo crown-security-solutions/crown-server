@@ -12,16 +12,20 @@ export class User extends Model {
 	public lastname!: string;
 	public email: string;
 	public corp_email!: string;
-	public dob!: Date;
+	public dob!: string;
 	public gender!: string;
 	public address!: string;
 	public pan!: string;
-	public adhaar!: string;
+  public adhaar!: string;
+  public adhaar_name!: string;
 	public bank_id: number;
 	public password!: string;
 	public verified!: boolean;
   public contact_number!: string;
   public alternate_contact_number!: string;
+  public linked_site_code!: string;
+  public start_date!: string;
+  public end_date!: string;
 	public active!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -34,64 +38,30 @@ User.init(
       autoIncrement: true,
       primaryKey: true
 		},
-		role_id: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+		role_id: DataTypes.STRING,
 		code: DataTypes.STRING,
-		firstname: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    middlename: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-		lastname: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+		firstname: DataTypes.STRING,
+    middlename: DataTypes.STRING,
+		lastname: DataTypes.STRING,
 		email: DataTypes.STRING,
-		corp_email: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    dob: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    gender: {
-      type: DataTypes.CHAR,
-      allowNull: false
-    },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    pan: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    adhaar: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    bank_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+		corp_email: DataTypes.STRING,
+    dob: DataTypes.STRING,
+    gender: DataTypes.STRING,
+    address: DataTypes.STRING,
+    pan: DataTypes.STRING,
+    adhaar: DataTypes.STRING,
+    adhaar_name: DataTypes.STRING,
+    bank_id: DataTypes.INTEGER,
+    password: DataTypes.STRING,
     verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false
     },
-    contact_number: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+    contact_number: DataTypes.STRING,
+    alternate_contact_number: DataTypes.STRING,
+    linked_site_code: DataTypes.STRING,
+    start_date: DataTypes.STRING,
+    end_date: DataTypes.STRING,
     active: {
       type: DataTypes.BOOLEAN,
       allowNull: false

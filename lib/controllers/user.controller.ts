@@ -41,9 +41,11 @@ export class UserController{
     return User
       .create(req.body)
       .then((user) => {
-				const { password, ...userWithoutPassword } = user;
-				return res.status(201).send(userWithoutPassword)})
-      .catch((error) => res.status(400).send(error));
+        return res.status(201).send(user);
+      })
+      .catch((error) => {
+        res.status(400).send(error);
+      });
   }
 
   list(req: Request, res: Response) {
@@ -63,6 +65,7 @@ export class UserController{
         'address',
         'pan',
         'adhaar',
+        'adhaar_name',
         'contact_number',
         'alternate_contact_number',
         'linked_site_code',
@@ -78,7 +81,9 @@ export class UserController{
 				}]
       })
       .then((users) => res.status(200).send(users))
-      .catch((error) => res.status(400).send(error));
+      .catch((error) => {
+        res.status(400).send(error)
+      });
   }
 
   retrieve(req: Request, res: Response) {
