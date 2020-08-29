@@ -175,23 +175,23 @@ export class UserAuditReportController{
 					{
 						model: UserAudit,
 						as: 'user_audits',
-						include: [
-							{
-								attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code', [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]],
-								model: User,
-								as: 'user',
-								include: [
-									{ 
-										model: Role,
-										as: 'role'
-									}
-								]
-							},
-							{ 
-								model: Role,
-								as: 'assigned_role'
-							}
-						]
+						// include: [
+						// 	{
+						// 		attributes: ['id', 'role_id', 'firstname', 'lastname', 'corp_email', 'code', [Sequelize.fn('CONCAT', Sequelize.col('firstname'), ' ', Sequelize.col('lastname')), "displayname"]],
+						// 		model: User,
+						// 		as: 'user',
+						// 		include: [
+						// 			{ 
+						// 				model: Role,
+						// 				as: 'role'
+						// 			}
+						// 		]
+						// 	},
+						// 	{ 
+						// 		model: Role,
+						// 		as: 'assigned_role'
+						// 	}
+						// ]
 					},
 					{
 						model: Site,
