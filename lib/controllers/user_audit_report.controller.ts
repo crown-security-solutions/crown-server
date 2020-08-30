@@ -192,20 +192,6 @@ export class UserAuditReportController{
 						// 		as: 'assigned_role'
 						// 	}
 						// ]
-					},
-					{
-						model: Site,
-						as: 'site',
-						include: [
-							{
-								model: SiteStrength,
-								order: [
-									['requirement_date', 'DESC']
-								],
-								limit: 1,
-								as: 'site_strengths'
-							}
-						]
 					}
 				]
 			})
@@ -215,56 +201,79 @@ export class UserAuditReportController{
 				// 		message: 'UserAuditReport Not Found',
 				// 	});
 				// }
-				let result = [];
-				const distinctReportDates = [... new Set(userAuditReports.map(x => format(new Date(x.reporting_date), 'yyyy-MM-dd')))];
-				const distinctSites = [... new Set(userAuditReports.map(x => +x.site_id))];
-				const maxShift = Math.max(...[... new Set(userAuditReports.map(x => +x.shift))]);
-				distinctReportDates.forEach(a => {
-					distinctSites.forEach(x => {
-						const siteWiseReports = userAuditReports.filter(y => +y.site_id === x && format(new Date(y.reporting_date), 'yyyy-MM-dd') === a);
-						const reportResultObject = {}
-						if(siteWiseReports.length) {
-							reportResultObject['reporting_date'] = a;
-							const firstSiteWiseReport: any = head(siteWiseReports);
-							reportResultObject['site_name'] = firstSiteWiseReport.site.name;
-							reportResultObject['branch_name'] = firstSiteWiseReport.site.branch_name;
-							reportResultObject['zone'] = firstSiteWiseReport.site.zone;
+				const distinctSiteIDs = [... new Set(userAuditReports.map(x => x.site_id))];
+				Site.findAll({
+					where: {
+						id: {
+							[Op.in]: distinctSiteIDs
 						}
-						let lastShift = 1;
-						//calculating ots, cross ots etc for each site date wise
-						siteWiseReports.forEach((z: any) => {
-							const site_strength = head(z.site.site_strengths);
-							const shift_string = +z.shift === 1 ? 'day' : +z.shift === 2 ? 'general' : 'night';
-							const strength_count = +site_strength['strength_count_' + shift_string];
-							reportResultObject['short_s' + z.shift] = z.user_audits.length <  strength_count? strength_count - z.user_audits.length : 0;
-							reportResultObject['ot_s' + z.shift] = z.user_audits.filter(b => b.ot).length;
-							reportResultObject['cross_ot_s' + z.shift] = z.user_audits.filter(b => b.cross_ot).length;
-							reportResultObject['night_day_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_ot).length;
-							reportResultObject['night_day_cross_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_cross_ot).length;
-							reportResultObject['grooming_failure_s' + z.shift] = z.user_audits.filter(b => b.grooming_failure).length;
-							reportResultObject['idf_s' + z.shift] = z.user_audits.filter(b => b.idf).length;
-							lastShift = z.shift;
-						});
-						//filling up redundant zeros if site have less shift than max shifts
-						if(lastShift < maxShift) {
-							range(lastShift + 1, maxShift + 1).forEach(e => {
-								reportResultObject['short_s' + e] = 0;
-								reportResultObject['ot_s' + e] = 0;
-								reportResultObject['cross_ot_s' + e] = 0;
-								reportResultObject['night_day_ot_s' + e] = 0;
-								reportResultObject['night_day_cross_ot_s' + e] = 0;
-								reportResultObject['grooming_failure_s' + e] = 0;
-								reportResultObject['idf_s' + e] = 0;
-							});
-						}
-						// if report is not empty then push
-						if (reportResultObject['reporting_date'] !== undefined) {
-							result.push(reportResultObject);
-						}
+					},
+					include: [
+								{
+									model: SiteStrength,
+									order: [
+										['requirement_date', 'DESC']
+									],
+									limit: 1,
+									as: 'site_strengths'
+								}
+							]
+				}).then((sites) => {
+					userAuditReports.forEach(x => {
+						const siteObj = sites.find(y => y.id === x.site_id);
+						x['site'] = siteObj;
 					});
-				});
-				return res.status(200).send({
-					...{ result, maxShift },
+					let result = [];
+					const distinctReportDates = [... new Set(userAuditReports.map(x => format(new Date(x.reporting_date), 'yyyy-MM-dd')))];
+					const distinctSites = [... new Set(userAuditReports.map(x => +x.site_id))];
+					const maxShift = Math.max(...[... new Set(userAuditReports.map(x => +x.shift))]);
+					distinctReportDates.forEach(a => {
+						distinctSites.forEach(x => {
+							const siteWiseReports = userAuditReports.filter(y => +y.site_id === x && format(new Date(y.reporting_date), 'yyyy-MM-dd') === a);
+							const reportResultObject = {}
+							if(siteWiseReports.length) {
+								reportResultObject['reporting_date'] = a;
+								const firstSiteWiseReport: any = head(siteWiseReports);
+								reportResultObject['site_name'] = firstSiteWiseReport.site.name;
+								reportResultObject['branch_name'] = firstSiteWiseReport.site.branch_name;
+								reportResultObject['zone'] = firstSiteWiseReport.site.zone;
+							}
+							let lastShift = 1;
+							//calculating ots, cross ots etc for each site date wise
+							siteWiseReports.forEach((z: any) => {
+								const site_strength = head(z.site.site_strengths);
+								const shift_string = +z.shift === 1 ? 'day' : +z.shift === 2 ? 'general' : 'night';
+								const strength_count = +site_strength['strength_count_' + shift_string];
+								reportResultObject['short_s' + z.shift] = z.user_audits.length <  strength_count? strength_count - z.user_audits.length : 0;
+								reportResultObject['ot_s' + z.shift] = z.user_audits.filter(b => b.ot).length;
+								reportResultObject['cross_ot_s' + z.shift] = z.user_audits.filter(b => b.cross_ot).length;
+								reportResultObject['night_day_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_ot).length;
+								reportResultObject['night_day_cross_ot_s' + z.shift] = z.user_audits.filter(b => b.night_day_cross_ot).length;
+								reportResultObject['grooming_failure_s' + z.shift] = z.user_audits.filter(b => b.grooming_failure).length;
+								reportResultObject['idf_s' + z.shift] = z.user_audits.filter(b => b.idf).length;
+								lastShift = z.shift;
+							});
+							//filling up redundant zeros if site have less shift than max shifts
+							if(lastShift < maxShift) {
+								range(lastShift + 1, maxShift + 1).forEach(e => {
+									reportResultObject['short_s' + e] = 0;
+									reportResultObject['ot_s' + e] = 0;
+									reportResultObject['cross_ot_s' + e] = 0;
+									reportResultObject['night_day_ot_s' + e] = 0;
+									reportResultObject['night_day_cross_ot_s' + e] = 0;
+									reportResultObject['grooming_failure_s' + e] = 0;
+									reportResultObject['idf_s' + e] = 0;
+								});
+							}
+							// if report is not empty then push
+							if (reportResultObject['reporting_date'] !== undefined) {
+								result.push(reportResultObject);
+							}
+						});
+					});
+					return res.status(200).send({
+						...{ result, maxShift },
+					});
 				});
 			})
 			.catch((error) => res.status(400).send(error));
